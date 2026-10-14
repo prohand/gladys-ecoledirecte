@@ -6,6 +6,8 @@ All notable changes to this integration are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-14
+
 ### Added
 
 - EcoleDirecte connection with a parent or a student account: GTK cookie, token renewal, and the security question (double authentication) answered from the Configuration screen, its answer kept in `/data` for the next starts.
@@ -18,4 +20,5 @@ All notable changes to this integration are documented here. The format follows
 - `SECURITY.md`, `CHANGELOG.md` and `CLAUDE.md`.
 - CI (format, lint, tests on Node 22 and 24, store checks and Docker build on pull requests), UI-driven Release workflow, multi-arch image build, GitHub Releases and Dependabot.
 
-[Unreleased]: https://github.com/prohand/gladys-ecoledirect/commits/main
+[Unreleased]: https://github.com/prohand/gladys-ecoledirect/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/prohand/gladys-ecoledirect/releases/tag/v1.0.1

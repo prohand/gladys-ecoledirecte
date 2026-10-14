@@ -1,6 +1,6 @@
 {
   "name": "gladys-ecoledirecte",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Gladys Assistant external integration for EcoleDirecte: grades, homework, timetable, school life and messages.",
   "type": "module",
