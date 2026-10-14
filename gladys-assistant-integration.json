@@ -1,0 +1,1117 @@
+{
+  "manifest_version": 1,
+  "type": "device",
+  "name": "EcoleDirecte",
+  "description": {
+    "en": "Grades, homework, timetable, absences and messages from EcoleDirecte in Gladys.",
+    "fr": "Notes, devoirs, emploi du temps, absences et messages EcoleDirecte dans Gladys.",
+    "de": "Noten, Hausaufgaben, Stundenplan, Fehlzeiten und Nachrichten von EcoleDirecte.",
+    "es": "Notas, deberes, horario, ausencias y mensajes de EcoleDirecte en Gladys."
+  },
+  "version": "1.0.0",
+  "docker_image": "ghcr.io/prohand/gladys-ecoledirect:1.0.0",
+  "gladys_version": ">=5.1.0",
+  "cover_image": "https://raw.githubusercontent.com/prohand/gladys-ecoledirect/main/cover.png",
+  "categories": ["services", "notifications"],
+  "transports": ["cloud"],
+  "config_schema": [
+    {
+      "key": "intro",
+      "type": "section",
+      "label": {
+        "en": "Getting started",
+        "fr": "Pour commencer",
+        "de": "Erste Schritte",
+        "es": "Primeros pasos"
+      },
+      "description": {
+        "en": "Use the username and password you type on ecoledirecte.com (a parent or a student account). The first time, EcoleDirecte may ask a security question: answer it with the two buttons below the form. Each child then appears in the Discovery tab.",
+        "fr": "Utilisez l'identifiant et le mot de passe que vous tapez sur ecoledirecte.com (compte parent ou élève). La première fois, EcoleDirecte peut poser une question de sécurité : répondez-y avec les deux boutons sous le formulaire. Chaque enfant apparaît ensuite dans l'onglet Découverte.",
+        "de": "Verwende den Benutzernamen und das Passwort, die du auf ecoledirecte.com eingibst (Eltern- oder Schülerkonto). Beim ersten Mal kann EcoleDirecte eine Sicherheitsfrage stellen: Beantworte sie mit den beiden Schaltflächen unter dem Formular. Jedes Kind erscheint dann im Reiter „Erkennung“.",
+        "es": "Use el usuario y la contraseña que escribe en ecoledirecte.com (cuenta de padres o de alumno). La primera vez, EcoleDirecte puede hacer una pregunta de seguridad: respóndala con los dos botones bajo el formulario. Cada hijo aparece luego en la pestaña Descubrimiento."
+      },
+      "links": [
+        {
+          "url": "https://www.ecoledirecte.com",
+          "label": {
+            "en": "EcoleDirecte",
+            "fr": "EcoleDirecte",
+            "de": "EcoleDirecte",
+            "es": "EcoleDirecte"
+          }
+        },
+        {
+          "url": "https://github.com/prohand/gladys-ecoledirect/blob/main/docs/en.md",
+          "label": {
+            "en": "Integration documentation",
+            "fr": "Documentation de l'intégration",
+            "de": "Dokumentation der Integration",
+            "es": "Documentación de la integración"
+          }
+        }
+      ]
+    },
+    {
+      "key": "username",
+      "type": "string",
+      "label": {
+        "en": "Username",
+        "fr": "Identifiant",
+        "de": "Benutzername",
+        "es": "Usuario"
+      },
+      "description": {
+        "en": "Your EcoleDirecte username.",
+        "fr": "Votre identifiant EcoleDirecte.",
+        "de": "Dein EcoleDirecte-Benutzername.",
+        "es": "Su usuario de EcoleDirecte."
+      },
+      "placeholder": {
+        "en": "e.g. jdupont",
+        "fr": "ex. jdupont",
+        "de": "z. B. jdupont",
+        "es": "p. ej. jdupont"
+      },
+      "required": true
+    },
+    {
+      "key": "password",
+      "type": "secret",
+      "label": {
+        "en": "Password",
+        "fr": "Mot de passe",
+        "de": "Passwort",
+        "es": "Contraseña"
+      },
+      "description": {
+        "en": "Your EcoleDirecte password. It is only sent to EcoleDirecte, never logged.",
+        "fr": "Votre mot de passe EcoleDirecte. Il n'est envoyé qu'à EcoleDirecte, jamais écrit dans les logs.",
+        "de": "Dein EcoleDirecte-Passwort. Es wird nur an EcoleDirecte gesendet und nie protokolliert.",
+        "es": "Su contraseña de EcoleDirecte. Solo se envía a EcoleDirecte y nunca se registra."
+      },
+      "required": true
+    },
+    {
+      "key": "refresh_minutes",
+      "type": "number",
+      "label": {
+        "en": "Refresh interval (min)",
+        "fr": "Intervalle de rafraîchissement (min)",
+        "de": "Aktualisierungsintervall (Min.)",
+        "es": "Intervalo de actualización (min)"
+      },
+      "description": {
+        "en": "How often EcoleDirecte is read, in minutes (10 to 720).",
+        "fr": "Fréquence de lecture d'EcoleDirecte, en minutes (10 à 720).",
+        "de": "Wie oft EcoleDirecte gelesen wird, in Minuten (10 bis 720).",
+        "es": "Cada cuánto se lee EcoleDirecte, en minutos (10 a 720)."
+      },
+      "required": false,
+      "default": 30,
+      "min": 10,
+      "max": 720
+    },
+    {
+      "key": "timezone",
+      "type": "string",
+      "label": {
+        "en": "School time zone",
+        "fr": "Fuseau horaire de l'établissement",
+        "de": "Zeitzone der Schule",
+        "es": "Zona horaria del centro"
+      },
+      "description": {
+        "en": "Used for \"today\", \"tomorrow\" and the lesson hours. Change it only for a school outside mainland France, e.g. America/Martinique.",
+        "fr": "Sert pour « aujourd'hui », « demain » et les heures de cours. À changer seulement pour un établissement hors métropole, ex. America/Martinique.",
+        "de": "Wird für „heute“, „morgen“ und die Unterrichtszeiten verwendet. Nur für eine Schule außerhalb des französischen Festlands ändern, z. B. America/Martinique.",
+        "es": "Se usa para «hoy», «mañana» y las horas de clase. Cámbiela solo para un centro fuera de la Francia metropolitana, p. ej. America/Martinique."
+      },
+      "placeholder": {
+        "en": "Europe/Paris",
+        "fr": "Europe/Paris",
+        "de": "Europe/Paris",
+        "es": "Europe/Paris"
+      },
+      "required": false,
+      "default": "Europe/Paris"
+    },
+    {
+      "key": "language",
+      "type": "select",
+      "label": {
+        "en": "Language of the device names",
+        "fr": "Langue des noms d'appareils",
+        "de": "Sprache der Gerätenamen",
+        "es": "Idioma de los nombres de dispositivos"
+      },
+      "description": {
+        "en": "Language of the feature names written when a student's device is created.",
+        "fr": "Langue des noms de fonctionnalités écrits à la création de l'appareil d'un élève.",
+        "de": "Sprache der Funktionsnamen, die beim Anlegen des Geräts eines Schülers geschrieben werden.",
+        "es": "Idioma de los nombres de funciones escritos al crear el dispositivo de un alumno."
+      },
+      "required": false,
+      "default": "fr",
+      "options": [
+        {
+          "value": "fr",
+          "label": {
+            "en": "French",
+            "fr": "Français",
+            "de": "Französisch",
+            "es": "Francés"
+          }
+        },
+        {
+          "value": "en",
+          "label": {
+            "en": "English",
+            "fr": "Anglais",
+            "de": "Englisch",
+            "es": "Inglés"
+          }
+        },
+        {
+          "value": "de",
+          "label": {
+            "en": "German",
+            "fr": "Allemand",
+            "de": "Deutsch",
+            "es": "Alemán"
+          }
+        },
+        {
+          "value": "es",
+          "label": {
+            "en": "Spanish",
+            "fr": "Espagnol",
+            "de": "Spanisch",
+            "es": "Español"
+          }
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
+      "timeout_seconds": 120
+    },
+    {
+      "key": "double_auth_question",
+      "label": {
+        "en": "Get the security question",
+        "fr": "Obtenir la question de sécurité",
+        "de": "Sicherheitsfrage abrufen",
+        "es": "Obtener la pregunta de seguridad"
+      },
+      "timeout_seconds": 60
+    },
+    {
+      "key": "double_auth_answer",
+      "label": {
+        "en": "Answer the security question",
+        "fr": "Répondre à la question de sécurité",
+        "de": "Sicherheitsfrage beantworten",
+        "es": "Responder a la pregunta de seguridad"
+      },
+      "timeout_seconds": 120,
+      "fields": [
+        {
+          "key": "answer",
+          "type": "string",
+          "label": {
+            "en": "Answer (number or text)",
+            "fr": "Réponse (numéro ou texte)",
+            "de": "Antwort (Nummer oder Text)",
+            "es": "Respuesta (número o texto)"
+          },
+          "placeholder": {
+            "en": "e.g. 2",
+            "fr": "ex. 2",
+            "de": "z. B. 2",
+            "es": "p. ej. 2"
+          },
+          "required": true
+        }
+      ]
+    }
+  ],
+  "scene_triggers": [
+    {
+      "key": "new_grade",
+      "label": {
+        "en": "New grade",
+        "fr": "Nouvelle note",
+        "de": "Neue Note",
+        "es": "Nueva nota"
+      },
+      "description": {
+        "en": "A new grade appeared on EcoleDirecte.",
+        "fr": "Une nouvelle note est apparue sur EcoleDirecte.",
+        "de": "Eine neue Note ist auf EcoleDirecte erschienen.",
+        "es": "Ha aparecido una nueva nota en EcoleDirecte."
+      },
+      "fields": [
+        {
+          "key": "student",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Student",
+            "fr": "Élève",
+            "de": "Schüler",
+            "es": "Alumno"
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "student_name",
+          "type": "string",
+          "label": {
+            "en": "Student name",
+            "fr": "Nom de l'élève",
+            "de": "Name des Schülers",
+            "es": "Nombre del alumno"
+          }
+        },
+        {
+          "key": "subject",
+          "type": "string",
+          "label": {
+            "en": "Subject",
+            "fr": "Matière",
+            "de": "Fach",
+            "es": "Asignatura"
+          }
+        },
+        {
+          "key": "assignment",
+          "type": "string",
+          "label": {
+            "en": "Assignment",
+            "fr": "Devoir",
+            "de": "Arbeit",
+            "es": "Ejercicio"
+          }
+        },
+        {
+          "key": "grade",
+          "type": "number",
+          "label": {
+            "en": "Grade",
+            "fr": "Note",
+            "de": "Note",
+            "es": "Nota"
+          }
+        },
+        {
+          "key": "out_of",
+          "type": "number",
+          "label": {
+            "en": "Out of",
+            "fr": "Sur",
+            "de": "Von",
+            "es": "Sobre"
+          }
+        },
+        {
+          "key": "grade_20",
+          "type": "number",
+          "label": {
+            "en": "Grade out of 20",
+            "fr": "Note sur 20",
+            "de": "Note von 20",
+            "es": "Nota sobre 20"
+          }
+        },
+        {
+          "key": "date",
+          "type": "string",
+          "label": {
+            "en": "Date",
+            "fr": "Date",
+            "de": "Datum",
+            "es": "Fecha"
+          }
+        }
+      ]
+    },
+    {
+      "key": "new_homework",
+      "label": {
+        "en": "New homework",
+        "fr": "Nouveau devoir",
+        "de": "Neue Hausaufgabe",
+        "es": "Nuevos deberes"
+      },
+      "description": {
+        "en": "A teacher gave new homework.",
+        "fr": "Un professeur a donné un nouveau devoir.",
+        "de": "Eine Lehrkraft hat eine neue Hausaufgabe gegeben.",
+        "es": "Un profesor ha puesto nuevos deberes."
+      },
+      "fields": [
+        {
+          "key": "student",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Student",
+            "fr": "Élève",
+            "de": "Schüler",
+            "es": "Alumno"
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "student_name",
+          "type": "string",
+          "label": {
+            "en": "Student name",
+            "fr": "Nom de l'élève",
+            "de": "Name des Schülers",
+            "es": "Nombre del alumno"
+          }
+        },
+        {
+          "key": "subject",
+          "type": "string",
+          "label": {
+            "en": "Subject",
+            "fr": "Matière",
+            "de": "Fach",
+            "es": "Asignatura"
+          }
+        },
+        {
+          "key": "due_date",
+          "type": "string",
+          "label": {
+            "en": "Due date",
+            "fr": "À faire pour le",
+            "de": "Fällig am",
+            "es": "Para el"
+          }
+        },
+        {
+          "key": "is_test",
+          "type": "boolean",
+          "label": {
+            "en": "Test announced",
+            "fr": "Contrôle annoncé",
+            "de": "Test angekündigt",
+            "es": "Examen anunciado"
+          }
+        }
+      ]
+    },
+    {
+      "key": "new_absence",
+      "label": {
+        "en": "New absence or delay",
+        "fr": "Nouvelle absence ou retard",
+        "de": "Neue Fehlzeit oder Verspätung",
+        "es": "Nueva ausencia o retraso"
+      },
+      "description": {
+        "en": "The school recorded an absence or a delay.",
+        "fr": "L'établissement a noté une absence ou un retard.",
+        "de": "Die Schule hat eine Fehlzeit oder Verspätung erfasst.",
+        "es": "El centro ha registrado una ausencia o un retraso."
+      },
+      "fields": [
+        {
+          "key": "student",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Student",
+            "fr": "Élève",
+            "de": "Schüler",
+            "es": "Alumno"
+          }
+        },
+        {
+          "key": "kind",
+          "type": "multi_select",
+          "label": {
+            "en": "Type",
+            "fr": "Type",
+            "de": "Art",
+            "es": "Tipo"
+          },
+          "options": [
+            {
+              "value": "absence",
+              "label": {
+                "en": "Absence",
+                "fr": "Absence",
+                "de": "Fehlzeit",
+                "es": "Ausencia"
+              }
+            },
+            {
+              "value": "delay",
+              "label": {
+                "en": "Delay",
+                "fr": "Retard",
+                "de": "Verspätung",
+                "es": "Retraso"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "student_name",
+          "type": "string",
+          "label": {
+            "en": "Student name",
+            "fr": "Nom de l'élève",
+            "de": "Name des Schülers",
+            "es": "Nombre del alumno"
+          }
+        },
+        {
+          "key": "kind",
+          "type": "string",
+          "label": {
+            "en": "Type",
+            "fr": "Type",
+            "de": "Art",
+            "es": "Tipo"
+          }
+        },
+        {
+          "key": "date",
+          "type": "string",
+          "label": {
+            "en": "Date",
+            "fr": "Date",
+            "de": "Datum",
+            "es": "Fecha"
+          }
+        },
+        {
+          "key": "label",
+          "type": "string",
+          "label": {
+            "en": "Details",
+            "fr": "Détails",
+            "de": "Details",
+            "es": "Detalles"
+          }
+        },
+        {
+          "key": "justified",
+          "type": "boolean",
+          "label": {
+            "en": "Justified",
+            "fr": "Justifiée",
+            "de": "Entschuldigt",
+            "es": "Justificada"
+          }
+        }
+      ]
+    },
+    {
+      "key": "lesson_cancelled",
+      "label": {
+        "en": "Lesson cancelled",
+        "fr": "Cours annulé",
+        "de": "Stunde entfällt",
+        "es": "Clase anulada"
+      },
+      "description": {
+        "en": "A coming lesson was cancelled in the timetable.",
+        "fr": "Un cours à venir a été annulé dans l'emploi du temps.",
+        "de": "Eine kommende Stunde wurde im Stundenplan gestrichen.",
+        "es": "Una próxima clase ha sido anulada en el horario."
+      },
+      "fields": [
+        {
+          "key": "student",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Student",
+            "fr": "Élève",
+            "de": "Schüler",
+            "es": "Alumno"
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "student_name",
+          "type": "string",
+          "label": {
+            "en": "Student name",
+            "fr": "Nom de l'élève",
+            "de": "Name des Schülers",
+            "es": "Nombre del alumno"
+          }
+        },
+        {
+          "key": "subject",
+          "type": "string",
+          "label": {
+            "en": "Subject",
+            "fr": "Matière",
+            "de": "Fach",
+            "es": "Asignatura"
+          }
+        },
+        {
+          "key": "date",
+          "type": "string",
+          "label": {
+            "en": "Date",
+            "fr": "Date",
+            "de": "Datum",
+            "es": "Fecha"
+          }
+        },
+        {
+          "key": "start",
+          "type": "string",
+          "label": {
+            "en": "Start",
+            "fr": "Début",
+            "de": "Beginn",
+            "es": "Inicio"
+          }
+        },
+        {
+          "key": "end",
+          "type": "string",
+          "label": {
+            "en": "End",
+            "fr": "Fin",
+            "de": "Ende",
+            "es": "Fin"
+          }
+        },
+        {
+          "key": "teacher",
+          "type": "string",
+          "label": {
+            "en": "Teacher",
+            "fr": "Professeur",
+            "de": "Lehrkraft",
+            "es": "Profesor"
+          }
+        }
+      ]
+    },
+    {
+      "key": "new_message",
+      "label": {
+        "en": "New message",
+        "fr": "Nouveau message",
+        "de": "Neue Nachricht",
+        "es": "Nuevo mensaje"
+      },
+      "description": {
+        "en": "A message arrived in the EcoleDirecte inbox.",
+        "fr": "Un message est arrivé dans la messagerie EcoleDirecte.",
+        "de": "Eine Nachricht ist im EcoleDirecte-Postfach eingegangen.",
+        "es": "Ha llegado un mensaje al buzón de EcoleDirecte."
+      },
+      "variables": [
+        {
+          "key": "from",
+          "type": "string",
+          "label": {
+            "en": "From",
+            "fr": "Expéditeur",
+            "de": "Absender",
+            "es": "Remitente"
+          }
+        },
+        {
+          "key": "subject",
+          "type": "string",
+          "label": {
+            "en": "Subject",
+            "fr": "Objet",
+            "de": "Betreff",
+            "es": "Asunto"
+          }
+        },
+        {
+          "key": "date",
+          "type": "string",
+          "label": {
+            "en": "Date",
+            "fr": "Date",
+            "de": "Datum",
+            "es": "Fecha"
+          }
+        },
+        {
+          "key": "account",
+          "type": "string",
+          "label": {
+            "en": "Students of the account",
+            "fr": "Élèves du compte",
+            "de": "Schüler des Kontos",
+            "es": "Alumnos de la cuenta"
+          }
+        }
+      ]
+    }
+  ],
+  "scene_actions": [
+    {
+      "key": "refresh",
+      "label": {
+        "en": "Refresh EcoleDirecte",
+        "fr": "Actualiser EcoleDirecte",
+        "de": "EcoleDirecte aktualisieren",
+        "es": "Actualizar EcoleDirecte"
+      },
+      "description": {
+        "en": "Read EcoleDirecte now instead of waiting for the next refresh.",
+        "fr": "Lit EcoleDirecte maintenant au lieu d'attendre le prochain rafraîchissement.",
+        "de": "Liest EcoleDirecte jetzt, statt auf die nächste Aktualisierung zu warten.",
+        "es": "Lee EcoleDirecte ahora en lugar de esperar a la próxima actualización."
+      },
+      "timeout_seconds": 120,
+      "outputs": [
+        {
+          "key": "success",
+          "type": "boolean",
+          "label": {
+            "en": "Success",
+            "fr": "Réussi",
+            "de": "Erfolgreich",
+            "es": "Éxito"
+          }
+        },
+        {
+          "key": "new_items",
+          "type": "number",
+          "label": {
+            "en": "New items",
+            "fr": "Nouveautés",
+            "de": "Neue Einträge",
+            "es": "Novedades"
+          }
+        }
+      ]
+    },
+    {
+      "key": "get_homework",
+      "label": {
+        "en": "Get homework",
+        "fr": "Lire les devoirs",
+        "de": "Hausaufgaben abrufen",
+        "es": "Obtener los deberes"
+      },
+      "description": {
+        "en": "The homework still to do for a day.",
+        "fr": "Les devoirs encore à faire pour un jour.",
+        "de": "Die offenen Hausaufgaben für einen Tag.",
+        "es": "Los deberes pendientes para un día."
+      },
+      "timeout_seconds": 15,
+      "fields": [
+        {
+          "key": "student",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Student",
+            "fr": "Élève",
+            "de": "Schüler",
+            "es": "Alumno"
+          },
+          "required": true
+        },
+        {
+          "key": "day",
+          "type": "select",
+          "label": {
+            "en": "Day",
+            "fr": "Jour",
+            "de": "Tag",
+            "es": "Día"
+          },
+          "required": false,
+          "default": "tomorrow",
+          "options": [
+            {
+              "value": "today",
+              "label": {
+                "en": "Today",
+                "fr": "Aujourd'hui",
+                "de": "Heute",
+                "es": "Hoy"
+              }
+            },
+            {
+              "value": "tomorrow",
+              "label": {
+                "en": "Tomorrow",
+                "fr": "Demain",
+                "de": "Morgen",
+                "es": "Mañana"
+              }
+            },
+            {
+              "value": "next_school_day",
+              "label": {
+                "en": "Next school day",
+                "fr": "Prochain jour de classe",
+                "de": "Nächster Schultag",
+                "es": "Próximo día de clase"
+              }
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "key": "date",
+          "type": "string",
+          "label": {
+            "en": "Date",
+            "fr": "Date",
+            "de": "Datum",
+            "es": "Fecha"
+          }
+        },
+        {
+          "key": "count",
+          "type": "number",
+          "label": {
+            "en": "Homework count",
+            "fr": "Nombre de devoirs",
+            "de": "Anzahl Hausaufgaben",
+            "es": "Número de deberes"
+          }
+        },
+        {
+          "key": "tests",
+          "type": "number",
+          "label": {
+            "en": "Tests announced",
+            "fr": "Contrôles annoncés",
+            "de": "Angekündigte Tests",
+            "es": "Exámenes anunciados"
+          }
+        },
+        {
+          "key": "subjects",
+          "type": "string",
+          "label": {
+            "en": "Subjects",
+            "fr": "Matières",
+            "de": "Fächer",
+            "es": "Asignaturas"
+          }
+        },
+        {
+          "key": "summary",
+          "type": "string",
+          "label": {
+            "en": "Summary",
+            "fr": "Résumé",
+            "de": "Zusammenfassung",
+            "es": "Resumen"
+          }
+        }
+      ]
+    },
+    {
+      "key": "get_timetable",
+      "label": {
+        "en": "Get timetable",
+        "fr": "Lire l'emploi du temps",
+        "de": "Stundenplan abrufen",
+        "es": "Obtener el horario"
+      },
+      "description": {
+        "en": "The lessons of a day: first start, last end, cancellations.",
+        "fr": "Les cours d'un jour : premier début, dernière fin, annulations.",
+        "de": "Die Stunden eines Tages: erster Beginn, letztes Ende, Ausfälle.",
+        "es": "Las clases de un día: primer inicio, último fin, anulaciones."
+      },
+      "timeout_seconds": 15,
+      "fields": [
+        {
+          "key": "student",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Student",
+            "fr": "Élève",
+            "de": "Schüler",
+            "es": "Alumno"
+          },
+          "required": true
+        },
+        {
+          "key": "day",
+          "type": "select",
+          "label": {
+            "en": "Day",
+            "fr": "Jour",
+            "de": "Tag",
+            "es": "Día"
+          },
+          "required": false,
+          "default": "tomorrow",
+          "options": [
+            {
+              "value": "today",
+              "label": {
+                "en": "Today",
+                "fr": "Aujourd'hui",
+                "de": "Heute",
+                "es": "Hoy"
+              }
+            },
+            {
+              "value": "tomorrow",
+              "label": {
+                "en": "Tomorrow",
+                "fr": "Demain",
+                "de": "Morgen",
+                "es": "Mañana"
+              }
+            },
+            {
+              "value": "next_school_day",
+              "label": {
+                "en": "Next school day",
+                "fr": "Prochain jour de classe",
+                "de": "Nächster Schultag",
+                "es": "Próximo día de clase"
+              }
+            }
+          ]
+        }
+      ],
+      "outputs": [
+        {
+          "key": "date",
+          "type": "string",
+          "label": {
+            "en": "Date",
+            "fr": "Date",
+            "de": "Datum",
+            "es": "Fecha"
+          }
+        },
+        {
+          "key": "has_lessons",
+          "type": "boolean",
+          "label": {
+            "en": "Has lessons",
+            "fr": "A des cours",
+            "de": "Hat Unterricht",
+            "es": "Tiene clases"
+          }
+        },
+        {
+          "key": "lesson_count",
+          "type": "number",
+          "label": {
+            "en": "Lessons",
+            "fr": "Cours",
+            "de": "Stunden",
+            "es": "Clases"
+          }
+        },
+        {
+          "key": "cancelled_count",
+          "type": "number",
+          "label": {
+            "en": "Cancelled lessons",
+            "fr": "Cours annulés",
+            "de": "Ausgefallene Stunden",
+            "es": "Clases anuladas"
+          }
+        },
+        {
+          "key": "first_start",
+          "type": "string",
+          "label": {
+            "en": "First lesson starts",
+            "fr": "Début du premier cours",
+            "de": "Beginn der ersten Stunde",
+            "es": "Inicio de la primera clase"
+          }
+        },
+        {
+          "key": "first_subject",
+          "type": "string",
+          "label": {
+            "en": "First subject",
+            "fr": "Première matière",
+            "de": "Erstes Fach",
+            "es": "Primera asignatura"
+          }
+        },
+        {
+          "key": "last_end",
+          "type": "string",
+          "label": {
+            "en": "Last lesson ends",
+            "fr": "Fin du dernier cours",
+            "de": "Ende der letzten Stunde",
+            "es": "Fin de la última clase"
+          }
+        }
+      ]
+    }
+  ],
+  "widgets": [
+    {
+      "key": "student_overview",
+      "label": {
+        "en": "School overview",
+        "fr": "Suivi scolaire",
+        "de": "Schulübersicht",
+        "es": "Resumen escolar"
+      },
+      "description": {
+        "en": "Average, last grade, homework, next lesson and messages of a student.",
+        "fr": "Moyenne, dernière note, devoirs, prochain cours et messages d'un élève.",
+        "de": "Durchschnitt, letzte Note, Hausaufgaben, nächste Stunde und Nachrichten.",
+        "es": "Media, última nota, deberes, próxima clase y mensajes de un alumno."
+      },
+      "icon": "user",
+      "settings": [
+        {
+          "key": "student",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Student",
+            "fr": "Élève",
+            "de": "Schüler",
+            "es": "Alumno"
+          },
+          "required": true
+        }
+      ],
+      "action_timeout_seconds": 120
+    },
+    {
+      "key": "homework",
+      "label": {
+        "en": "Homework",
+        "fr": "Devoirs",
+        "de": "Hausaufgaben",
+        "es": "Deberes"
+      },
+      "description": {
+        "en": "The homework still to do, with its content.",
+        "fr": "Les devoirs encore à faire, avec leur contenu.",
+        "de": "Die offenen Hausaufgaben mit ihrem Inhalt.",
+        "es": "Los deberes pendientes, con su contenido."
+      },
+      "icon": "book-open",
+      "settings": [
+        {
+          "key": "student",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Student",
+            "fr": "Élève",
+            "de": "Schüler",
+            "es": "Alumno"
+          },
+          "required": true
+        }
+      ],
+      "action_timeout_seconds": 120
+    },
+    {
+      "key": "timetable",
+      "label": {
+        "en": "Timetable",
+        "fr": "Emploi du temps",
+        "de": "Stundenplan",
+        "es": "Horario"
+      },
+      "description": {
+        "en": "The lessons of a day, cancellations included.",
+        "fr": "Les cours d'un jour, annulations comprises.",
+        "de": "Die Stunden eines Tages, Ausfälle inklusive.",
+        "es": "Las clases de un día, anulaciones incluidas."
+      },
+      "icon": "calendar",
+      "settings": [
+        {
+          "key": "student",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Student",
+            "fr": "Élève",
+            "de": "Schüler",
+            "es": "Alumno"
+          },
+          "required": true
+        },
+        {
+          "key": "day",
+          "type": "select",
+          "label": {
+            "en": "Day",
+            "fr": "Jour",
+            "de": "Tag",
+            "es": "Día"
+          },
+          "required": false,
+          "default": "today",
+          "options": [
+            {
+              "value": "today",
+              "label": {
+                "en": "Today",
+                "fr": "Aujourd'hui",
+                "de": "Heute",
+                "es": "Hoy"
+              }
+            },
+            {
+              "value": "tomorrow",
+              "label": {
+                "en": "Tomorrow",
+                "fr": "Demain",
+                "de": "Morgen",
+                "es": "Mañana"
+              }
+            },
+            {
+              "value": "next_school_day",
+              "label": {
+                "en": "Next school day",
+                "fr": "Prochain jour de classe",
+                "de": "Nächster Schultag",
+                "es": "Próximo día de clase"
+              }
+            }
+          ]
+        }
+      ],
+      "action_timeout_seconds": 120
+    }
+  ]
+}

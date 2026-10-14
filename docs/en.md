@@ -1,0 +1,102 @@
+# EcoleDirecte
+
+This integration connects Gladys to **EcoleDirecte**, the online school platform
+of many French secondary schools. For each child the account follows, it reads
+grades and averages, homework, the timetable, absences and delays, and the
+inbox.
+
+It goes through the internet (**cloud** badge): there is nothing to install on
+your network.
+
+## Configuration
+
+1. Open the **Configuration** tab of the integration.
+2. Enter the **username** and **password** you type on
+   [ecoledirecte.com](https://www.ecoledirecte.com). A **parent** account gives
+   every child; a **student** account gives the student.
+3. Optional settings:
+   - **Refresh interval**: every 30 minutes by default (10 minutes at least);
+   - **School time zone**: `Europe/Paris` by default. Change it only for a school
+     outside mainland France (`America/Martinique`, `Indian/Reunion`…);
+   - **Language of the device names**: the language of the names written when
+     the devices are created.
+4. Save, then click **Test the connection**.
+
+### The security question
+
+The first time, EcoleDirecte often asks to confirm the device with a question
+(for example "What is your birth year?"). The integration status says so. Then:
+
+1. click **Get the security question**: the question and the numbered possible
+   answers appear under the button;
+2. within 10 minutes, type the **number** of the right answer (or its text) in
+   **Answer the security question**.
+
+The integration keeps the answer: the question is not asked again at the next
+starts. If EcoleDirecte asks it again one day, repeat these two steps.
+
+## Devices
+
+Each child appears in the **Discovery** tab; add it. Its features:
+
+| Feature               | Content                                                  |
+| --------------------- | -------------------------------------------------------- |
+| General average       | Average of the current period (out of 20)                |
+| Last grade (/20)      | Last grade entered, scaled to 20                         |
+| Last grade            | As text: "MATHEMATIQUES : 15/20 (Contrôle chap. 3)"      |
+| Homework for tomorrow | Homework not done, due tomorrow                          |
+| Homework to do        | Homework not done, still to come                         |
+| Next lesson           | "08:00 MATHEMATIQUES (S12)", with the day when not today |
+| Absences / Delays     | Count over the school year                               |
+| Unread messages       | Unread messages of the account's inbox                   |
+
+When the school switches a module off (the grades, for instance), the matching
+feature stays empty. When the school does not publish the general average, the
+integration computes it from the grades: the average of each subject (with the
+coefficients), then the average of the subjects.
+
+## Scenes (Gladys 5.1 or later)
+
+### Triggers
+
+- **New grade**: variables `subject`, `assignment`, `grade`, `out_of`,
+  `grade_20`, `date`, `student_name`.
+- **New homework**: `subject`, `due_date`, `is_test`.
+- **New absence or delay**: filter on the type; `kind`, `date`, `label`,
+  `justified`.
+- **Lesson cancelled**: a coming lesson was cancelled; `subject`, `date`,
+  `start`, `end`, `teacher`.
+- **New message**: `from`, `subject`, `date`.
+
+Each one can be filtered on a student. At the first start, the integration
+records what already exists without firing anything.
+
+### Actions
+
+- **Refresh EcoleDirecte**: reads EcoleDirecte right away.
+- **Get homework** (today, tomorrow, next school day): `count`, `tests`,
+  `subjects`, `summary` (the homework content, ready to send as a message).
+- **Get timetable**: `has_lessons`, `first_start`, `first_subject`, `last_end`,
+  `lesson_count`, `cancelled_count` — enough to set the alarm on the first
+  lesson.
+
+Example: every evening at 7 pm, "Get homework" for tomorrow, then send `summary`
+on Telegram when `count` is above 0.
+
+## Widgets (Gladys 5.1 or later)
+
+- **School overview**: live average, last grade, homework for tomorrow and unread
+  messages, next lesson, absences and delays.
+- **Homework**: the homework still to do, with its content.
+- **Timetable**: the lessons of a day, cancelled ones flagged.
+
+Pick the student in the widget settings.
+
+## Troubleshooting
+
+- "EcoleDirecte refused the username or the password": check them on
+  ecoledirecte.com.
+- "The school is not available": EcoleDirecte often closes access during the
+  holidays; the integration retries by itself.
+- "EcoleDirecte refused the API version": update the integration.
+- The integration logs never show the password.
