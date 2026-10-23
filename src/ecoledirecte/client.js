@@ -11,9 +11,15 @@
 //     520/525 token invalid or expired, 517 version refused, 535 school closed);
 //   - login needs a "GTK" cookie fetched first (GET login.awp?gtk=1), echoed
 //     in the `X-Gtk` header of the login POST — without it the API answers
-//     "bad credentials" even for good ones;
-//   - a new device must answer a security question (code 250): its answer
-//     gives a "cn"/"cv" pair, sent back in `fa` at every later login;
+//     "bad credentials" even for good ones. It is fetched again before every
+//     login POST: a stale one gets the same misleading answer;
+//   - a new device must answer a security question (code 250). The question
+//     needs the `2FA-Token` header the 250 answer carries (without it: "Token
+//     invalide"); the answer gives a "cn"/"cv" pair. The login that follows
+//     sends the pair both at the top level and in `fa`, as the web app does;
+//     the later logins send it in `fa` only;
+//   - the tokens travel in the response headers (`X-Token`, `2FA-Token`) and
+//     are sent back on every request, as the web app's interceptor does;
 //   - a token only works with the User-Agent it was issued to: one constant UA.
 //
 // Nothing here logs the password, the token or the cn/cv pair.
@@ -25,7 +31,7 @@ const logger = createLogger({ name: 'ecoledirecte' });
 
 export const API_URL = 'https://api.ecoledirecte.com/v3';
 // The version the web app announces. The API refuses an unknown one (517).
-export const API_VERSION = '4.75.0';
+export const API_VERSION = '4.101.4';
 export const USER_AGENT =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) ' +
   'Chrome/128.0.0.0 Safari/537.36';
@@ -110,6 +116,7 @@ function readCookies(response) {
  */
 export function createClient({ fetch: fetchImpl = globalThis.fetch } = {}) {
   let token = '';
+  let twoFaToken = '';
   let cookies = {};
 
   function cookieHeader() {
@@ -128,6 +135,7 @@ export function createClient({ fetch: fetchImpl = globalThis.fetch } = {}) {
           Accept: 'application/json, text/plain, */*',
           ...(body !== undefined ? { 'Content-Type': 'application/x-www-form-urlencoded' } : {}),
           ...(token ? { 'X-Token': token } : {}),
+          ...(twoFaToken ? { '2FA-Token': twoFaToken } : {}),
           ...(Object.keys(cookies).length ? { Cookie: cookieHeader() } : {}),
           ...headers,
         },
@@ -138,6 +146,10 @@ export function createClient({ fetch: fetchImpl = globalThis.fetch } = {}) {
       throw new EcoleDirecteError(ERROR_KINDS.NETWORK, `EcoleDirecte unreachable: ${err.message}`);
     }
     Object.assign(cookies, readCookies(response));
+    const renewed2fa = response.headers.get('2fa-token');
+    if (renewed2fa) {
+      twoFaToken = renewed2fa;
+    }
     return response;
   }
 
@@ -154,8 +166,9 @@ export function createClient({ fetch: fetchImpl = globalThis.fetch } = {}) {
         'EcoleDirecte answered something else than JSON',
       );
     }
-    // Every answer may carry a renewed token: always keep the newest one.
-    const renewed = json?.token || response.headers.get('x-token');
+    // Every answer may carry a renewed token: always keep the newest one. The
+    // header wins, as in the web app: the body copy may be missing or stale.
+    const renewed = response.headers.get('x-token') || json?.token;
     if (renewed) {
       token = renewed;
     }
@@ -167,28 +180,49 @@ export function createClient({ fetch: fetchImpl = globalThis.fetch } = {}) {
     return `data=${encodeURIComponent(JSON.stringify(data ?? {}))}`;
   }
 
+  /** GET login.awp?gtk=1: the GTK the login POST echoes in `X-Gtk`. */
+  async function fetchGtk() {
+    delete cookies.GTK;
+    const response = await send(`${API_URL}/login.awp?gtk=1&v=${API_VERSION}`, { method: 'GET' });
+    // The value is a cookie; some answers carry it in a header or in the body instead.
+    let body = null;
+    try {
+      body = await response.json();
+    } catch {
+      // An empty body: the cookie is enough.
+    }
+    return body?.token || response.headers.get('x-gtk') || cookies.GTK || '';
+  }
+
   /**
    * Log in. Resolves the accounts; rejects with an EcoleDirecteError whose
    * `kind` is DOUBLE_AUTH when the security question must be answered (the
-   * token received then allows exactly that, see doubleAuthQuestion).
+   * tokens received then allow exactly that, see doubleAuthQuestion).
    *
-   * @param {{ username: string, password: string, doubleAuth?: { cn: string, cv: string } | null }} credentials
+   * @param {{ username: string, password: string, doubleAuth?: { cn: string, cv: string } | null, resume?: boolean }} credentials
+   *   `resume`: the login right after the security question was answered. It
+   *   keeps the session of the question (cookies, tokens) and sends the pair at
+   *   the top level too.
    */
-  async function login({ username, password, doubleAuth = null }) {
-    token = '';
-    cookies = {};
-    // The GTK cookie first: the login POST is refused without it.
-    await send(`${API_URL}/login.awp?gtk=1&v=${API_VERSION}`, { method: 'GET' });
-    const gtk = cookies.GTK;
+  async function login({ username, password, doubleAuth = null, resume = false }) {
+    if (!resume) {
+      token = '';
+      twoFaToken = '';
+      cookies = {};
+    }
+    // The GTK first, fresh for every login POST: it is refused without it.
+    const gtk = await fetchGtk();
     if (!gtk) {
       logger.warn('EcoleDirecte gave no GTK cookie: the login will probably be refused');
     }
+    const pair = doubleAuth ? { cn: doubleAuth.cn, cv: doubleAuth.cv } : null;
     const payload = {
       identifiant: username,
       motdepasse: password,
-      isRelogin: false,
+      isReLogin: false,
       uuid: '',
-      ...(doubleAuth ? { fa: [{ cn: doubleAuth.cn, cv: doubleAuth.cv }] } : {}),
+      ...(resume && pair ? pair : {}),
+      fa: pair ? [pair] : [],
     };
     const json = await readJson(
       await send(`${API_URL}/login.awp?v=${API_VERSION}`, {
@@ -256,6 +290,7 @@ export function createClient({ fetch: fetchImpl = globalThis.fetch } = {}) {
     hasToken: () => Boolean(token),
     reset() {
       token = '';
+      twoFaToken = '';
       cookies = {};
     },
   };
