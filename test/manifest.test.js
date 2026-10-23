@@ -134,5 +134,13 @@ test('dynamic selects declare the devices source and no static options', () => {
 
 test('the manifest version is the package version, and the image is tagged with it', () => {
   assert.equal(manifest.version, pkg.version);
-  assert.equal(manifest.docker_image, `ghcr.io/prohand/gladys-ecoledirect:${manifest.version}`);
+  // 1.0.1 was released before the repository was renamed to gladys-ecoledirecte,
+  // so its image still carries the old name; the Release workflow writes the new
+  // one (`ghcr.io/<repository>`) from the next release on.
+  assert.match(
+    manifest.docker_image,
+    new RegExp(
+      `^ghcr\\.io/prohand/gladys-ecoledirecte?:${manifest.version.replaceAll('.', '\\.')}$`,
+    ),
+  );
 });

@@ -15,7 +15,7 @@ Update the integration from the Gladys store before reporting an issue.
 Please do **not** open a public issue for a security problem.
 
 Report it privately through GitHub: open the **Security** tab of
-[prohand/gladys-ecoledirect](https://github.com/prohand/gladys-ecoledirect/security),
+[prohand/gladys-ecoledirecte](https://github.com/prohand/gladys-ecoledirecte/security),
 then **Report a vulnerability**.
 
 Include, when you can:

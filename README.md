@@ -78,7 +78,7 @@ The same as [prohand/gladys-devmel](https://github.com/prohand/gladys-devmel):
   `package.json` and the manifest, rolls `CHANGELOG.md`, tags, then calls the build
   and the GitHub Release.
 - **Build** (`build.yml`) — multi-arch image (`linux/amd64`, `linux/arm64`) on
-  `ghcr.io/prohand/gladys-ecoledirect`.
+  `ghcr.io/prohand/gladys-ecoledirecte`.
 - **GitHub releases** (`github-release.yml`) — one GitHub Release per version tag.
 - **Dependabot** — npm weekly, GitHub Actions and Docker monthly.
 
