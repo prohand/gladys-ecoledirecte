@@ -6,6 +6,12 @@ All notable changes to this integration are documented here. The format follows
 
 ## [Unreleased]
 
+### Fixed
+
+- Security question refused with "Token invalide !": the question is now asked with the `2FA-Token` that EcoleDirecte sends with code 250, and the tokens are read from the response headers first, as the web app does (#4).
+- Login after answering the security question: it keeps the session of the question and sends the `cn`/`cv` pair at the top level as well as in `fa`, as the web app does.
+- Login closer to the current web app: a fresh GTK before every login POST, `isReLogin`, an empty `fa` list when no pair is saved, and API version 4.101.4. This should clear "Identifiant et/ou mot de passe invalide !" answers given to valid credentials (#4).
+
 ## [1.0.2] - 2026-10-23
 
 - Maintenance release, no functional change.

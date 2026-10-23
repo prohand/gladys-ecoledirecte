@@ -130,6 +130,8 @@ export function createRuntime({
   let refreshTimer = null;
   let tickTimer = null;
   let pendingQuestion = null;
+  // The next login follows an answered security question (see client.login).
+  let resumeLogin = false;
   const snapshots = new Map();
   const inboxes = new Map();
   const details = new Map();
@@ -146,11 +148,14 @@ export function createRuntime({
 
   async function login() {
     const saved = store.getDoubleAuth(config.username);
+    const resume = resumeLogin;
+    resumeLogin = false;
     try {
       const accounts = await client.login({
         username: config.username,
         password: config.password,
         doubleAuth: saved,
+        resume: resume && Boolean(saved),
       });
       students = studentsFromAccounts(accounts);
       loggedIn = true;
@@ -497,6 +502,7 @@ export function createRuntime({
         client.reset();
         loggedIn = false;
         pendingQuestion = null;
+        resumeLogin = false;
         students = [];
         snapshots.clear();
         inboxes.clear();
@@ -572,6 +578,7 @@ export function createRuntime({
       store.setDoubleAuth(config.username, pair);
       pendingQuestion = null;
       loggedIn = false;
+      resumeLogin = true;
       return { matched: true, result: await sync() };
     },
   };

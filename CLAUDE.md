@@ -64,8 +64,10 @@ test/helpers/fakeEcoleDirecte.js fake API (fetch replacement) + fixtures
   echoed in `X-Gtk`. A token only works with the User-Agent it was issued to: keep
   `USER_AGENT` constant. Reference: <https://github.com/EduWireApps/ecoledirecte-api-docs>.
 - **Double authentication** (code 250): the user answers a question from two manifest
-  actions; the answer gives a reusable `cn`/`cv` pair saved in `/data` and sent as
-  `fa` at every login. While a question waits for its answer (10 min), automatic
+  actions; the question needs the `2FA-Token` header of the 250 answer. The answer
+  gives a reusable `cn`/`cv` pair saved in `/data` and sent as `fa` at every login
+  (the login right after the answer keeps the session and sends it at the top level
+  too). While a question waits for its answer (10 min), automatic
   syncs are skipped: a new login would void it.
 - **The first sync is a baseline**: it records the ids it sees and fires no event.
   Later syncs fire one event per new id, at most `MAX_EVENTS_PER_KIND` per kind. The

@@ -29,7 +29,8 @@ test('a password with + and & survives the form encoding', async () => {
   const client = createClient({ fetch: ed.fetch });
   await client.login(credentials(ed));
   assert.equal(ed.state.logins[0].motdepasse, 'p+ss&word');
-  assert.equal(ed.state.logins[0].isRelogin, false);
+  assert.equal(ed.state.logins[0].isReLogin, false);
+  assert.deepEqual(ed.state.logins[0].fa, []);
 });
 
 test('authenticated calls carry the token and the verb', async () => {
@@ -85,6 +86,56 @@ test('the security question is decoded, the answer gives the pair', async () => 
   );
   assert.deepEqual(await client.doubleAuthAnswer(propositions[1].raw), ed.state.pair);
   await assert.rejects(client.doubleAuthAnswer(propositions[0].raw));
+});
+
+test('the security question is asked with the 2FA-Token of the code 250', async () => {
+  const ed = createFakeEcoleDirecte({ doubleAuth: true });
+  const client = createClient({ fetch: ed.fetch });
+  await client.login(credentials(ed)).catch(() => {});
+  await client.doubleAuthQuestion();
+  assert.equal(ed.state.calls.at(-1).headers['2FA-Token'], ed.state.twoFaToken);
+});
+
+test('the login after the answer keeps the session and sends the pair twice', async () => {
+  const ed = createFakeEcoleDirecte({ doubleAuth: true });
+  const client = createClient({ fetch: ed.fetch });
+  await client.login(credentials(ed)).catch(() => {});
+  const { propositions } = await client.doubleAuthQuestion();
+  const pair = await client.doubleAuthAnswer(propositions[1].raw);
+  await client.login({ ...credentials(ed), doubleAuth: pair, resume: true });
+  const [gtk, login] = ed.state.calls.slice(-2);
+  assert.equal(gtk.query.gtk, '1', 'a fresh GTK before the login');
+  assert.equal(login.headers['2FA-Token'], ed.state.twoFaToken);
+  assert.equal(login.data.cn, pair.cn);
+  assert.equal(login.data.cv, pair.cv);
+  assert.deepEqual(login.data.fa, [pair]);
+  // A later login starts a new session and sends the pair in `fa` only.
+  await client.login({ ...credentials(ed), doubleAuth: pair });
+  const later = ed.state.calls.at(-1);
+  assert.equal(later.headers['2FA-Token'], undefined);
+  assert.equal(later.data.cn, undefined);
+  assert.deepEqual(later.data.fa, [pair]);
+});
+
+test('the token of the X-Token header wins over the body copy', async () => {
+  let calls = 0;
+  const client = createClient({
+    fetch: async (url, init) => {
+      calls += 1;
+      if (calls === 1) {
+        return new Response('', { headers: { 'Set-Cookie': 'GTK=g' } });
+      }
+      if (calls === 2) {
+        return Response.json(
+          { code: 200, token: 'body-token', data: { accounts: [] } },
+          { headers: { 'X-Token': 'header-token' } },
+        );
+      }
+      return Response.json({ code: 200, data: init.headers['X-Token'] });
+    },
+  });
+  await client.login({ username: 'u', password: 'p' });
+  assert.equal(await client.request('x.awp'), 'header-token');
 });
 
 test('decodeBase64 reads UTF-8', () => {

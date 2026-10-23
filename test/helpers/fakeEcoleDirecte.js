@@ -2,7 +2,8 @@
 // A fake EcoleDirecte API, as a `fetch` replacement: no network in the tests.
 //
 // It plays the protocol the client must follow (GTK cookie, X-Gtk header,
-// `data=` form body, codes in the JSON, security question) and serves the
+// `data=` form body, codes in the JSON, security question and its 2FA-Token
+// header) and serves the
 // fixtures below, which the tests edit to simulate a new grade, a cancelled
 // lesson, an expired token...
 // -----------------------------------------------------------------------------
@@ -238,6 +239,8 @@ export function createFakeEcoleDirecte({ doubleAuth = false } = {}) {
     pair: { cn: 'Y24tdmFsdWU=', cv: 'Y3YtdmFsdWU=' },
     tokenCount: 0,
     validTokens: new Set(),
+    // The 2FA-Token of the last code 250: the question needs it.
+    twoFaToken: null,
     expireTokens: false,
     calls: [],
     logins: [],
@@ -282,9 +285,18 @@ export function createFakeEcoleDirecte({ doubleAuth = false } = {}) {
       const fa = data.fa?.[0];
       const pairOk = fa && fa.cn === state.pair.cn && fa.cv === state.pair.cv;
       if (state.doubleAuth && !pairOk) {
-        return json({ code: 250, token: newToken(), message: '', data: {} });
+        const token = newToken();
+        state.twoFaToken = `2fa-${state.tokenCount}`;
+        return json(
+          { code: 250, token, message: '', data: {} },
+          { 'X-Token': token, '2FA-Token': state.twoFaToken },
+        );
       }
-      return json({ code: 200, token: newToken(), data: { accounts: state.fixtures.accounts } });
+      const token = newToken();
+      return json(
+        { code: 200, token, data: { accounts: state.fixtures.accounts } },
+        { 'X-Token': token },
+      );
     }
 
     const token = headers['X-Token'];
@@ -299,6 +311,9 @@ export function createFakeEcoleDirecte({ doubleAuth = false } = {}) {
     const ok = (body) => json({ code: 200, token, data: body });
 
     if (path === 'connexion/doubleauth.awp') {
+      if (!state.twoFaToken || headers['2FA-Token'] !== state.twoFaToken) {
+        return json({ code: 520, token: '', message: 'Token invalide !' });
+      }
       if (parsed.searchParams.get('verbe') === 'get') {
         return ok({ question: b64(QUESTION), propositions: PROPOSITIONS.map(b64) });
       }

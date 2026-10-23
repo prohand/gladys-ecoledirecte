@@ -30,6 +30,8 @@ test('an account under double authentication says so, then the question is answe
   // The pair is saved and sent at the next login.
   assert.deepEqual(store.getDoubleAuth(ed.state.username), ed.state.pair);
   assert.deepEqual(ed.state.logins.at(-1).fa, [ed.state.pair]);
+  // The login right after the answer also sends the pair at the top level.
+  assert.equal(ed.state.logins.at(-1).cn, ed.state.pair.cn);
 });
 
 test('the answer can be typed as its text', async (t) => {
