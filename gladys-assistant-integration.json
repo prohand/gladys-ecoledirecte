@@ -8,8 +8,8 @@
     "de": "Noten, Hausaufgaben, Stundenplan, Fehlzeiten und Nachrichten von EcoleDirecte.",
     "es": "Notas, deberes, horario, ausencias y mensajes de EcoleDirecte en Gladys."
   },
-  "version": "1.0.1",
-  "docker_image": "ghcr.io/prohand/gladys-ecoledirect:1.0.1",
+  "version": "1.0.2",
+  "docker_image": "ghcr.io/prohand/gladys-ecoledirecte:1.0.2",
   "gladys_version": ">=5.1.0",
   "cover_image": "https://raw.githubusercontent.com/prohand/gladys-ecoledirecte/main/cover.png",
   "categories": ["services", "notifications"],
