@@ -20,5 +20,5 @@ All notable changes to this integration are documented here. The format follows
 - `SECURITY.md`, `CHANGELOG.md` and `CLAUDE.md`.
 - CI (format, lint, tests on Node 22 and 24, store checks and Docker build on pull requests), UI-driven Release workflow, multi-arch image build, GitHub Releases and Dependabot.
 
-[Unreleased]: https://github.com/prohand/gladys-ecoledirect/compare/v1.0.1...HEAD
-[1.0.1]: https://github.com/prohand/gladys-ecoledirect/releases/tag/v1.0.1
+[Unreleased]: https://github.com/prohand/gladys-ecoledirecte/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/prohand/gladys-ecoledirecte/releases/tag/v1.0.1
