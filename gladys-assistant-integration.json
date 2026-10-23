@@ -11,7 +11,7 @@
   "version": "1.0.1",
   "docker_image": "ghcr.io/prohand/gladys-ecoledirect:1.0.1",
   "gladys_version": ">=5.1.0",
-  "cover_image": "https://raw.githubusercontent.com/prohand/gladys-ecoledirect/main/cover.png",
+  "cover_image": "https://raw.githubusercontent.com/prohand/gladys-ecoledirecte/main/cover.png",
   "categories": ["services", "notifications"],
   "transports": ["cloud"],
   "config_schema": [
@@ -41,7 +41,7 @@
           }
         },
         {
-          "url": "https://github.com/prohand/gladys-ecoledirect/blob/main/docs/en.md",
+          "url": "https://github.com/prohand/gladys-ecoledirecte/blob/main/docs/en.md",
           "label": {
             "en": "Integration documentation",
             "fr": "Documentation de l'intégration",
