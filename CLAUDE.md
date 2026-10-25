@@ -91,6 +91,9 @@ test/helpers/fakeEcoleDirecte.js fake API (fetch replacement) + fixtures
 code (handlers, triggers fired, defaults, day options) and checks that every text
 exists in the four languages. The manifest declares `"transports": ["cloud"]`:
 EcoleDirecte is an internet service, there is no local channel.
+It also declares the catalog `keywords` and `countries: ["FR"]`, which need
+`gladys_version >= 5.3.0` (the test pins that coupling and the store's category
+vocabulary).
 
 ## Rules
 

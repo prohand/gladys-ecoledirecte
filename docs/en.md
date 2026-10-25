@@ -6,7 +6,7 @@ grades and averages, homework, the timetable, absences and delays, and the
 inbox.
 
 It goes through the internet (**cloud** badge): there is nothing to install on
-your network.
+your network. It requires **Gladys 5.3.0 or later**.
 
 ## Configuration
 

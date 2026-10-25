@@ -6,7 +6,7 @@ les notes et la moyenne, les devoirs, l'emploi du temps, les absences et retards
 et la messagerie.
 
 Elle passe par internet (badge **cloud**) : il n'y a rien à installer sur votre
-réseau.
+réseau. Elle nécessite **Gladys 5.3.0 ou plus**.
 
 ## Configuration
 
