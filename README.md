@@ -8,7 +8,8 @@ JavaScript SDK
 from the [official template](https://github.com/GladysAssistant/integration-template-js).
 
 - **Transport:** `cloud` (EcoleDirecte is an internet service; nothing runs on your LAN).
-- **Gladys:** 5.1.0 or later (scene triggers, scene actions and widgets).
+- **Gladys:** 5.3.0 or later (catalog keywords and countries; scene triggers, scene actions
+  and widgets need 5.1.0).
 - **Languages:** English, French, German, Spanish.
 
 User documentation: [English](docs/en.md) · [Français](docs/fr.md) ·

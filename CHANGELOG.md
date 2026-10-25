@@ -6,6 +6,16 @@ All notable changes to this integration are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Catalog search keywords (EcoleDirecte, vie scolaire, collège, lycée…) and the country (France) in the manifest, so the Gladys catalog finds the integration and shows it to French instances.
+
+### Changed
+
+- Requires Gladys 5.3.0 or later (the version that accepts the catalog keywords and countries).
+- `@gladysassistant/integration-sdk` 0.16.
+- The release workflow runs the store admission checks once the image is published; the pull request checks skip the image only.
+
 ## [1.0.3] - 2026-10-23
 
 ### Fixed

@@ -6,7 +6,7 @@ cuenta, lee las notas y medias, los deberes, el horario, las ausencias y
 retrasos, y el buzón de mensajes.
 
 Funciona a través de internet (distintivo **cloud**): no hay nada que instalar
-en su red.
+en su red. Requiere **Gladys 5.3.0 o superior**.
 
 ## Configuración
 

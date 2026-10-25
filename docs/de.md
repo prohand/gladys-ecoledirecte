@@ -6,7 +6,7 @@ folgt, liest sie Noten und Durchschnitte, Hausaufgaben, den Stundenplan,
 Fehlzeiten und Verspätungen sowie das Postfach.
 
 Sie arbeitet über das Internet (Badge **Cloud**): In deinem Netzwerk muss nichts
-installiert werden.
+installiert werden. Sie benötigt **Gladys 5.3.0 oder neuer**.
 
 ## Konfiguration
 
