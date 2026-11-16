@@ -6,6 +6,10 @@ All notable changes to this integration are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-11-16
+
+- Maintenance release, no functional change.
+
 ## [1.1.0] - 2026-10-25
 
 ### Added
@@ -44,7 +48,8 @@ All notable changes to this integration are documented here. The format follows
 - `SECURITY.md`, `CHANGELOG.md` and `CLAUDE.md`.
 - CI (format, lint, tests on Node 22 and 24, store checks and Docker build on pull requests), UI-driven Release workflow, multi-arch image build, GitHub Releases and Dependabot.
 
-[Unreleased]: https://github.com/prohand/gladys-ecoledirecte/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/prohand/gladys-ecoledirecte/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/prohand/gladys-ecoledirecte/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/prohand/gladys-ecoledirecte/compare/v1.0.3...v1.1.0
 [1.0.3]: https://github.com/prohand/gladys-ecoledirecte/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/prohand/gladys-ecoledirecte/compare/v1.0.1...v1.0.2
